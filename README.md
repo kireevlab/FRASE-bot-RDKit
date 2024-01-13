@@ -15,9 +15,11 @@ FRASE-bot-RDKit is a collection of cheminformatics protocols designed for data p
 
 To use FRASE-bot-RDKit, ensure that you have the following prerequisites:
 
-- **Python:** Install Python on your system. The code is compatible with Python 3.x.
+- **Python:** Install Python on your Linux system. The code is compatible with Python 3.x.
 
-- **RDKit:** Install the RDKit cheminformatics toolkit. Detailed instructions can be found on the [RDKit website](https://www.rdkit.org/).
+- **Conda:** Install miniconda3 on your Linux system.
+ 
+- **RDKit:** Install the RDKit cheminformatics toolkit by miniconda3. Detailed information on RDKit can be found on the [RDKit website](https://www.rdkit.org/).
   
 ## Installation 
 We strongly recommend installing RDKit on Linux using conda. Alternatively, you can run the scripts on Jupyter Notebook.
