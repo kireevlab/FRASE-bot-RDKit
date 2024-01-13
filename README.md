@@ -38,7 +38,7 @@ We strongly recommend installing RDKit on Linux using conda. Alternatively, you 
   ```
 
 ## Workflow:
-1. FRASE database is stored in the FRASE_database_PDB/ folder, utilized for FRASE-bot screening. The folder contains a total of 10,599 FRASEs.
+1. FRASE database is stored in the FRASE_database_PDB/ folder, utilized for FRASE-bot screening. The folder contains a total of 10,599 FRASEs. Save these folder on your working directory.
 2. Execute the main script:
    ```
    submit FRASE-screening.sh.
