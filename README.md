@@ -63,7 +63,7 @@ conda create --name Tensorflow python=3.8
    ```
    submit FRASE-screening.sh.
    ```
-   This bash script, `FRASE-bot-RDKit-batch.sh`, will use python script `FRASE-bot-RDKit.py` to perform batch FRASE screening based on 10,599 FARASEs. Note that certain High-Performance Computing (HPC) systems may have limitations on job submission numbers. Adjust the submission array accordingly in the bash script `FRASE-bot-RDKit-batch.sh`: `##SBATCH --array 0-10598`. Replace the third argument, `CIB1-Ana-prot.pdb`, with the name of your pdb file in the following command `python FRASE-bot-RDKit.py $inp $folder_id CIB1-Ana-prot.pdb`. In addition, modify the path of FRASE_database_PDB{folder_id}/ directory in the script `FRASE-bot-RDKit.py`: `frase_db = f'/your_path/FRASE_database_PDB{folder_id}/{frase_inp}'`
+   This bash script, `FRASE-bot-RDKit-batch.sh`, will use python script `FRASE-bot-RDKit.py` to perform batch FRASE screening based on 10,598 FARASEs. Note that certain High-Performance Computing (HPC) systems may have limitations on job submission numbers. Adjust the submission array accordingly in the bash script `FRASE-bot-RDKit-batch.sh`: `##SBATCH --array 0-10598`. Replace the third argument, `CIB1-Ana-prot.pdb`, with the name of your pdb file in the following command `python FRASE-bot-RDKit.py $inp $folder_id CIB1-Ana-prot.pdb`. In addition, modify the path of FRASE_database_PDB{folder_id}/ directory in the script `FRASE-bot-RDKit.py`: `frase_db = f'/your_path/FRASE_database_PDB{folder_id}/{frase_inp}'`
    
 3. After execution, generate new files for subsequent machine learning using the following bash script.
    ```
