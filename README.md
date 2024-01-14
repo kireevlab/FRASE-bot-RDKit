@@ -58,7 +58,7 @@ conda create --name Tensorflow python=3.8
 
 
 ## Workflow
-1. FRASE database is stored in the FRASE_database_PDB/ folder, utilized for FRASE-bot screening. The folder contains a total of 10,599 FRASEs. First, save the folder on your working directory.
+1. FRASE database containing a total of 10,598 FRASEs is stored in the compressed file `FRASE_database_PDB0.zip`, utilized for FRASE-bot screening. First of all, save this file on your working directory.
 2. Execute the main script:
    ```
    submit FRASE-screening.sh.
@@ -73,7 +73,7 @@ conda create --name Tensorflow python=3.8
    ```
    submit FRASE-bot-RDKit-NN.sh
    ```
-   The information on the interaction fingerprint of 10,598 FRASEs is stored in the file `IF_FRASEdb.json` and is utilized as training data. Save this file to your working directory and specify its actual path in the script `FRASE-bot-RDKit-NN.py`: `FRASEdb_file = '/your_path/IF_FRASEdb.json'`
+   The interaction fingerprint outcomes of 10,598 FRASEs is stored in the file `IF_FRASEdb.json`, which was utilized as training data. Save this file to your working directory and specify its actual path in the script `FRASE-bot-RDKit-NN.py`: `FRASEdb_file = '/your_path/IF_FRASEdb.json'`
 
 5. Final screened ligand fragments can be found under new generated folder `screen_ligFragments/`.
 
