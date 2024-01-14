@@ -54,6 +54,7 @@ conda create --name Tensorflow python=3.8
 6. **Install tensorflow:**
   ```
   conda install -c conda-forge tensorflow
+  ```
 
 
 ## Workflow:
