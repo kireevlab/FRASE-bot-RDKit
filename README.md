@@ -63,7 +63,7 @@ conda create --name Tensorflow python=3.8
    ```
    submit FRASE-screening.sh.
    ```
-   This bash script, `FRASE-bot-RDKit-batch.sh`, use python script `FRASE-bot-RDKit.py` to perform batch FRASE screening based on 10,599 FARASEs. Note that certain High-Performance Computing (HPC) systems may have limitations on job submission numbers. Adjust the submission array accordingly in `FRASE-bot-RDKit-batch.sh`: `##SBATCH --array 0-10598`. In addition, modify the path of FRASE_database_PDB/ directory in `FRASE-bot-RDKit.py`: `pdb_files = glob.glob(f'/your_path/FRASE_database_PDB{folder_id}/{frase_inp}')`
+   This bash script, `FRASE-bot-RDKit-batch.sh`, use python script `FRASE-bot-RDKit.py` to perform batch FRASE screening based on 10,599 FARASEs. Note that certain High-Performance Computing (HPC) systems may have limitations on job submission numbers. Adjust the submission array accordingly in `FRASE-bot-RDKit-batch.sh`: `##SBATCH --array 0-10598`. In addition, modify the path of FRASE_database_PDB/ directory in `FRASE-bot-RDKit.py`: `frase_db = f'/your_path/FRASE_database_PDB{folder_id}/{frase_inp}'`
 3. After execution, generate new files for subsequent machine learning using the following bash script.
    ```
    submit generate_IF_target.sh
@@ -75,3 +75,7 @@ conda create --name Tensorflow python=3.8
    The information on the interaction fingerprint of 10,598 FRASEs is stored in the file `IF_FRASEdb.json` and is utilized as training data. Save this file to your working directory and specify its actual path in `FRASE-bot-RDKit-NN.py`: `FRASEdb_file = '/your_path/IF_FRASEdb.json'`
 
 5. Final screened ligand fragments can be found under new generated folder `screen_ligFragments/`.
+
+
+## Examples:
+- Three target examples are provided using the structures 1bl7, 3wd9, and CIB1-Ana-prot. You can locate these examples in the "Examples" directory.
