@@ -58,7 +58,11 @@ conda create --name Tensorflow python=3.8
 
 
 ## Workflow
-1. FRASE database containing a total of 10,598 FRASEs is stored in the compressed file `FRASE_database_PDB0.zip`, utilized for FRASE-bot screening. First of all, save this file on your working directory.
+1. FRASE database containing a total of 10,598 FRASEs is stored in the compressed file `FRASE_database_PDB0.zip`, utilized for FRASE-bot screening. First of all, save this file on your working directory and then proceed to decompress it using the command:
+   ```
+   unzip FRASE_database_PDB0.zip
+   ```
+   
 2. Execute the main script:
    ```
    submit FRASE-screening.sh.
@@ -69,6 +73,7 @@ conda create --name Tensorflow python=3.8
    ```
    submit generate_IF_target.sh
    ```
+   
 4. Employ the `FRASE-bot-RDKit-NN.sh` script in the final step to generate screening outcomes. 
    ```
    submit FRASE-bot-RDKit-NN.sh
