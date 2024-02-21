@@ -327,8 +327,8 @@ def fp_target(m,three_atoms):
 # In[5]:
 
 
-def WriteTripletTarget(triplet_target,target_file):
-    file_path_target=f'triplet_db/tmp_target_triplet_{triplet_target}.pdb'
+def WriteTripletTarget(triplet_target,target_file,pdbname,index):
+    file_path_target=f'triplet_db/tmp_target_triplet_{pdbname}_{index}_{triplet_target}.pdb'
     for r in triplet_target:
         rfile_target = open(target_file,"r")
         wfile_target = open(file_path_target,"a")
@@ -339,8 +339,8 @@ def WriteTripletTarget(triplet_target,target_file):
         wfile_target.close()
     return
 
-def WriteTripletFrasedb(triplet_db, frasedb_file):
-    file_path_db = f'triplet_db/tmp_FRASEdb_triplet_{triplet_db}.pdb'                
+def WriteTripletFrasedb(triplet_db, frasedb_file, pdbname,index):
+    file_path_db = f'triplet_db/tmp_FRASEdb_triplet_{pdbname}_{index}_{triplet_db}.pdb'                
     
     if os.path.exists(file_path_db):
         #print(file_path_db, 'exists.')
@@ -772,7 +772,7 @@ def GetCoorAromaticCenter(m,aromatic_index):
 
 
 # work on a set of molecules
-def InteractionFingerprint(pdbname,triplet_target):
+def InteractionFingerprint(pdbname,triplet_target,index):
     
     # print title line
     #sys.stdout = open('FRASE-atomic-convolutions.txt',mode = 'w', encoding = 'utf-8')
@@ -781,7 +781,7 @@ def InteractionFingerprint(pdbname,triplet_target):
     #    print("i%03d"%(i+1),end='\t')
     #print(end='\n')
     
-    SDFFile = str(f'newFragments/frase_in_target_{pdbname}_{triplet_target}.sdf')
+    SDFFile = str(f'newFragments/frase_in_target_{pdbname}_{index}_{triplet_target}.sdf')
     mol = Chem.SDMolSupplier(SDFFile)
     mols = [x for x in mol if x is not None]
     m = mols[0]
@@ -790,7 +790,7 @@ def InteractionFingerprint(pdbname,triplet_target):
 
     #print(m.GetProp('PDB_ID'))    # what we need!
     fraseID = m.GetProp('FRASE_ID')  # what we need!
-    output1 = 'tmp.sdf'
+    output1 = f'tmp_{pdbname}_{index}_{triplet_target}.sdf'
     writer = Chem.SDWriter(output1)
     writer.write(m)
     writer.close()
@@ -1016,21 +1016,16 @@ def InteractionFingerprint(pdbname,triplet_target):
                             ie = 9 / (rij * rij *rij *rij)
                             e = e + ie
                 inter_finger.append(e)             
-                
-    #print(fraseID,end='\t')
-    #for i,inter in enumerate(inter_finger):
-    #    print(inter,end='\t')
-    #print(end='\n')
-    os.remove(SDFFile)
+
     return inter_finger
 
 
 # In[7]:
 
 
-def Alignment(triplet_db,triplet_target):
-    file_path_db = f'triplet_db/tmp_FRASEdb_triplet_{triplet_db}.pdb'                
-    file_path_target=f'triplet_db/tmp_target_triplet_{triplet_target}.pdb'
+def Alignment(triplet_db,triplet_target,pdbname,index):
+    file_path_db = f'triplet_db/tmp_FRASEdb_triplet_{pdbname}_{index}_{triplet_db}.pdb'                
+    file_path_target=f'triplet_db/tmp_target_triplet_{pdbname}_{index}_{triplet_target}.pdb'
     if not os.path.exists(file_path_db) or not os.path.exists(file_path_target):
         sys.exit(1)  # Exit with an error code
     #try:
@@ -1071,10 +1066,10 @@ def Alignment(triplet_db,triplet_target):
         atomMap=list(zip(probe_atomMap,refer_atomMap))
         rms=rdMolAlign.AlignMol(mol1, mol2,atomMap=atomMap)
 
-        file_path_align = f'triplet_db/tmp-aligned-FRASEdb_triplet_{triplet_target}.pdb'
+        file_path_align = f'triplet_db/tmp-aligned-FRASEdb_triplet_{pdbname}_{index}_{triplet_target}.pdb'
         Chem.MolToPDBFile(mol1, file_path_align)
         fi = open(file_path_align,"r")
-        fragments_aligned=f'triplet_db/aligned-FRASEdb_triplet_{triplet_target}.pdb'
+        fragments_aligned=f'triplet_db/aligned-FRASEdb_triplet_{pdbname}_{index}_{triplet_target}.pdb'
         with open(fragments_aligned, 'a') as f:
             for line in fi.readlines():
                 if (line.split()[0]) == 'HETATM' and (line.split()[3]) == 'LIG'  or line.split()[0] == 'CONECT':
@@ -1084,7 +1079,7 @@ def Alignment(triplet_db,triplet_target):
         os.remove(file_path_align)
     
         mol = Chem.MolFromPDBFile(fragments_aligned)    
-        sdf_file = Chem.SDWriter(f'triplet_db/aligned-FRASEdb_triplet_{triplet_target}.sdf')
+        sdf_file = Chem.SDWriter(f'triplet_db/aligned-FRASEdb_triplet_{pdbname}_{index}_{triplet_target}.sdf')
         if mol is None:
             return  
         sdf_file.write(mol)
@@ -1099,9 +1094,9 @@ def Alignment(triplet_db,triplet_target):
 # In[8]:
 
 
-def FindDecoy(triplet_target):
+def FindDecoy(triplet_target,pdbname,index):
     clash_threshold = 1.0 # !!! change to 1.0
-    sdf_file = f'triplet_db/aligned-FRASEdb_triplet_{triplet_target}.sdf'
+    sdf_file = f'triplet_db/aligned-FRASEdb_triplet_{pdbname}_{index}_{triplet_target}.sdf'
 
     if not os.path.exists(sdf_file):
         sys.exit(1)  # Exit with an error code
@@ -1114,7 +1109,7 @@ def FindDecoy(triplet_target):
 
    # suppl = Chem.SDMolSupplier(sdf_file)
     mol = suppl[0]
-    file_path_target=f'triplet_db/tmp_target_triplet_{triplet_target}.pdb'
+    file_path_target=f'triplet_db/tmp_target_triplet_{pdbname}_{index}_{triplet_target}.pdb'
     tmol_triplet = Chem.MolFromPDBFile(file_path_target)
     
     if tmol_triplet is None:
@@ -1156,12 +1151,10 @@ def check_and_append_buried_atoms(atom, m, tmol, clash_threshold, reslist):
 
 def Find5ARes(triplet_target,tmol,target,pdbid,pdbname,index):
   
-    sdf_file = f"triplet_db/aligned-FRASEdb_triplet_{triplet_target}.sdf"
-    #new_sdfname = f"triplet_db/{pdbname}_{index}.sdf" 
-    #os.rename(sdf_file, new_sdfname)
-
+    sdf_file = f"triplet_db/aligned-FRASEdb_triplet_{pdbname}_{index}_{triplet_target}.sdf"
     suppl = Chem.SDMolSupplier(sdf_file)
     m = suppl[0]
+    
     if m is None:
         return
     clash_threshold = 1.0
@@ -1187,7 +1180,7 @@ def Find5ARes(triplet_target,tmol,target,pdbid,pdbname,index):
     if not reslist:
         return
     # write ligand_fragment pdb file                
-    pdb1 = f'newFragments/ligfrag_{pdbname}_{triplet_target}.pdb'
+    pdb1 = f'newFragments/ligfrag_{pdbname}_{index}_{triplet_target}.pdb'
     Chem.MolToPDBFile(m,pdb1)
 
     #destination_folder = "newFragments/"
@@ -1196,7 +1189,7 @@ def Find5ARes(triplet_target,tmol,target,pdbid,pdbname,index):
     # write residue contact pdb file
     for i in set(reslist):
         output1 = target
-        output2 = f'newFragments/surr_res_{pdbname}_{triplet_target}.pdb'
+        output2 = f'newFragments/surr_res_{pdbname}_{index}_{triplet_target}.pdb'
         fp1 = open(output1,"r")
         fp2 = open(output2,"a")
         for line in fp1.readlines():
@@ -1205,7 +1198,7 @@ def Find5ARes(triplet_target,tmol,target,pdbid,pdbname,index):
         fp2.close()
         fp1.close()
     # output ligand + surrunding residues
-    output3 = f'newFragments/lig_surr_res_{pdbname}_{triplet_target}.pdb'
+    output3 = f'newFragments/lig_surr_res_{pdbname}_{index}_{triplet_target}.pdb'
 
     fcom1 = open(pdb1,"r")
     fcom2 = open(output2,"r")
@@ -1230,10 +1223,6 @@ def Find5ARes(triplet_target,tmol,target,pdbid,pdbname,index):
             fcom.write(line)
     fcom1.close()
     fcom.close()
-    #os.remove(pdb1)
-    # rename pdb1:
-    new_file_name = f"newFragments/{pdbname}_{index}.pdb" 
-    os.rename(pdb1, new_file_name)
     os.remove(output2)
     
     # optimize writing info:
@@ -1252,7 +1241,7 @@ def Find5ARes(triplet_target,tmol,target,pdbid,pdbname,index):
         if ri.GetResidueName() != 'LIG':
             atname.append(ri.GetName())
             
-    output4 = str(f'newFragments/tmp0_frase_in_target_{pdbname}_{triplet_target}.sdf')
+    output4 = str(f'newFragments/tmp0_frase_in_target_{pdbname}_{index}_{triplet_target}.sdf')
     writer = Chem.SDWriter(output4)
     mol.SetProp('PDB_ID','%s' %(pdbid))
     mol.SetProp('FRASE_ID', pdbid + '_' + str(hash_value))
@@ -1262,7 +1251,7 @@ def Find5ARes(triplet_target,tmol,target,pdbid,pdbname,index):
     writer.write(mol)
     writer.close()
     
-    output5 = str(f'newFragments/frase_in_target_{pdbname}_{triplet_target}.sdf')
+    output5 = str(f'newFragments/frase_in_target_{pdbname}_{index}_{triplet_target}.sdf')
     fp4 = open(output4,"r")
     fp5 = open(output5,"w")
     for line in fp4.readlines():
@@ -1270,7 +1259,7 @@ def Find5ARes(triplet_target,tmol,target,pdbid,pdbname,index):
             fp5.write(line)
     fp5.close()
     fp4.close()
-    print(output5)
+    #print(output5)
 
     # remove intermediate files    
     os.remove(output3)
@@ -1284,13 +1273,16 @@ folder_paths = [
     "triplet_db"
 ]
 
-for folder_path in folder_paths:
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
-        print(f"Folder '{folder_path}' created.")
-    else:
-        print(f"Folder '{folder_path}' already exists. Skipping.")
+try:
+    for folder_path in folder_paths:
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+            print(f"Folder '{folder_path}' created.")
+        else:
+            print(f"Folder '{folder_path}' already exists. Skipping.")
 
+except FileExistsError:
+    print(f"The directory '{folder_path}' already exists.")
 
 # In[ ]:
 
@@ -1299,8 +1291,8 @@ for folder_path in folder_paths:
 #with open("temp_stderr.txt", "w") as temp_stderr_file:
 #    sys.stderr = temp_stderr_file
     
-if len(sys.argv) < 4:
-    print("Usage: python FRASE_screen.py frase_inp folder_id pdbid")
+if len(sys.argv) < 3:
+    print("Usage: python FRASE_screen.py frase_db_path pdbid")
     sys.exit(1)
 
 frase_inp = sys.argv[1]
@@ -1315,8 +1307,7 @@ pdbid = [line.split()[0] for pdb_file_path in pdb_files for line in open(pdb_fil
 print(len(pdb_files), 'FRASEs were used for matching the triplets in a target')
 
 """read from target protein"""
-input_file = sys.argv[3]
-target = input_file
+target = sys.argv[3]
 tmol = Chem.MolFromPDBFile(target)
 
 IF_target = []
@@ -1327,40 +1318,46 @@ for x in range(len(pmols)):
     if p3 == []:
         print(f'There is no triplet matches found in FRASE {x+1}:',pdb_files[x], 'Skipping...')
         continue
+    elif t3 == []:
+        print(f'There is no triplet matches found in target, Skipping...')
+        continue
     else:
+
+        if pmols[x] is None:
+            continue
         print('Triplet matches found in FRASE',x+1,'-',pdb_files[x], 'Processing...')
         for i in fp_target(tmol,t3):
             for fp_db6 in fp_database(pmols[x],p3):
-                if pmols[x] is None:
-                    continue
-                tri = []
                 if i[0] in fp_db6[0]:
                     """start to align""" 
                     ## 1. write triplets from target protein and FRASE database to the pdb files seperately
-                    WriteTripletTarget(i[1],target)
-                    WriteTripletFrasedb(fp_db6[1],pdb_files[x])
+                    WriteTripletTarget(i[1],target,pdbname[x],x)
+                    WriteTripletFrasedb(fp_db6[1],pdb_files[x],pdbname[x],x)
                     ## 2. use the pdb files generated from above step to do alignments, 
                     ##    save the aligned ligand fragment to a single pdb file 
-                    Alignment(fp_db6[1],i[1])
+                    Alignment(fp_db6[1],i[1],pdbname[x],x)
                     ## 3. check structural decoy and find the fragment surrounding residues in target protein
-                    tri_suv = FindDecoy(i[1])
+                    tri_suv = FindDecoy(i[1],pdbname[x],x)
                     if tri_suv is not None:
                         outp5 = Find5ARes(tri_suv,tmol,target,pdbid[x],pdbname[x],x)
                         ## 4. calculate interaction fingerprint: 264 descriptors each LSE
                         if outp5 is not None:
-                            INF = InteractionFingerprint(pdbname[x],tri_suv)
+                            INF = InteractionFingerprint(pdbname[x],tri_suv,x)
                             IF_target.append(INF)
                             na = str(pdbname[x])+'_'+str(x)
                             pdblabel.append(na)
                             #print(INF)
-                            
+                            SDFFile = str(f'newFragments/frase_in_target_{pdbname[x]}_{x}_{tri_suv}.sdf')
+                            os.remove(SDFFile)                           
                     break
+
 
 if not IF_target:
     print('No interaction fingerprint was calculated. Exit...')
 else:
     print('New FRASE was found and interaction fingerprint was shown:')
-    print(pdblabel[0],'::',IF_target[0])
+    for i in range(len(pdblabel)):
+        print(f'{pdblabel[i]} :: {IF_target[i]}')
 
 # Restore the original stderr
 #sys.stderr = temp_stderr
